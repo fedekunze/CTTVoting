@@ -84,8 +84,15 @@ contract Token is TokenInterface {
   	/* unlocks account for address, call after everyone has revealed ans has been charged */
   	function unlockAccount(address account, uint256 newBalance) isVotingMech() public {
       	/* update total supply after force update */
+//       	totalSupply = totalSupply + newBalance - balances[account];
+//       	balances[account] = newBalance;
+      	forceUpdate(account, newBalance);
+    		lockedAccounts[account] = false;
+    }
+  	/* unlocks account for address, call after everyone has revealed ans has been charged */
+  	function forceUpdate(address account, uint256 newBalance) isVotingMech() public {
+      	/* update total supply after force update */
       	totalSupply = totalSupply + newBalance - balances[account];
       	balances[account] = newBalance;
-    		lockedAccounts[account] = false;
     }
 }
