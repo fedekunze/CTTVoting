@@ -1,18 +1,26 @@
 import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
 import logo from './logo.svg';
 import './App.css';
+import Form from './Form';
+import Navb from './Navb';
+import Footer from './Footer';
+import { Router, Route, Switch } from 'react-router'
+import {Button, Jumbotron } from 'react-bootstrap';
+import {Grid, Row, Col, Image, Thumbnail, Modal, FormGroup, FormControl, ControlLabel} from 'react-bootstrap';
 
 class App extends Component {
   render() {
     return (
       <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
-        </header>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
+        <Navb/>
+        <Jumbotron className="banner">
+          <Grid>
+            <h1>CTT voting</h1>
+            <p>Redefining corporate Governance</p>
+          </Grid>
+        </Jumbotron>
+        <Footer/>
       </div>
     );
   }
