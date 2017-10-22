@@ -22,15 +22,15 @@ class App extends Component {
   }
   componentWillMount() {
     //example function
-    //pollsterContract.newPoll(this.refs.question.value.toString(), array, parseInt(this.refs.numPolls.value, 10), {from: account, gas: 4000000, value: web3.toWei(parseFloat(this.refs.reward.value, 10), 'ether')})
-
+    //pollsterContract.newPoll(this.refs.question.value.toString(), array, parseInt(this.refs.numPolls.value, 10), {from: account, gas: 4000000, value:   web3.toWei(parseFloat(this.refs.reward.value, 10), 'ether')})
+    console.log(this.state.tokenContract.balanceOf(this.state.accounts[1], {from: this.state.accounts[0]}));
   }
 
   render() {
 
     return (
       <div className="App">
-        <div> {this.state.accounts[0]} </div>
+        <div> {this.state.accounts[1]} </div>
         <Navb/>
         <Main/>
         <Footer/>

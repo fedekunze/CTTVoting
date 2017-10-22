@@ -3,6 +3,8 @@ import ReactDOM from 'react-dom';
 import {Grid, Row, Col, Form, FormGroup, Button, FormControl,
   ControlLabel, Checkbox, Fade, Well} from 'react-bootstrap';
 import ReactFileReader from 'react-file-reader';
+import {superVotingContract, tokenContract, votingMechContract, accounts, web3} from './EthereumSetup';
+
 
 class Admin extends React.Component {
 
@@ -40,6 +42,53 @@ class Admin extends React.Component {
     newOpt.push({'name': reference.text, 'shares': 0}); //execute the manipulations
     this.setState({options: newOpt}); //set the new state
     alert(this.state.options.length);
+  }
+
+  handleQuestion() {
+    votingMechContract.newVotingSession("Question 1. dfsa  2.fdalsj", 2, 4, {from: accounts[0], gas: 4000000}, function(error, result) {
+      if (error) {
+        console.log(error);
+      } else {
+        console.log(result);
+      }
+    })
+    var returnedQ = votingMechContract.getQuestion({from: accounts[0], gas: 4000000}, function(error, result) {
+      if (error) {
+        console.log(error);
+      } else {
+        console.log(result);
+      }
+    })
+    console.log(returnedQ)
+  }
+
+  handleVote() {
+    // var Voted;
+    // Voted = votingMechContract.Voted({from: accounts[0]});
+    // Voted.watch(function(err, result) {
+    //   if (err) {
+    //     console.log(err);
+    //   } else {
+    //     console.log(result);
+    //   }
+    // })
+    var input = votingMechContract.sha3Helper("0x0001", [1,2] , {from: accounts[1], gas: 4000000}, function(error, result) {
+      if (error) {
+        console.log(error);
+      } else {
+        console.log(result);
+      }
+    });
+
+    console.log(input);
+
+    votingMechContract.vote(input, {from: accounts[0], gas: 4000000}, function(error, result) {
+      if (error) {
+        console.log(error);
+      } else {
+        console.log(result);
+      }
+    })
   }
 
   handlePollCreation() {
@@ -101,6 +150,8 @@ class Admin extends React.Component {
         <Button onClick={()=> this.setState({ open: !this.state.open })}>
           Create Poll
         </Button>
+        <Button onClick={this.handleQuestion}/>
+        <Button onClick={this.handleVote}>Vote</Button>
         <Fade in={this.state.open}>
           <div>
             <Well>
@@ -156,7 +207,7 @@ class Admin extends React.Component {
               </FormGroup>
               <FormGroup>
                 <Col sm={12}>
-                  <Button type="submit" onClick={this.handlePollCreation}>
+                  <Button type="submit" onClick={this.handleQuestion}>
                     Create
                   </Button>
                 </Col>
