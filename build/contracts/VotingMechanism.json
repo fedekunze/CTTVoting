@@ -287,8 +287,62 @@
         }
       },
       "updated_at": 1508677933659
+    },
+    "1508697379190": {
+      "links": {},
+      "events": {
+        "0x1ad0a1ab13806f2b802415fa49a77ed3f633af31788e4a0645de1fc90c2a0da4": {
+          "anonymous": false,
+          "inputs": [],
+          "name": "VoteStarted",
+          "type": "event"
+        },
+        "0x650d798f3862ff92822acb5de11a760351b122df0cf4e24ef80b0a7ff82e0eb9": {
+          "anonymous": false,
+          "inputs": [],
+          "name": "Voted",
+          "type": "event"
+        },
+        "0x3bcc93d35219aa0512d7c0d1ca10b0231f473e3d5f9396877d1b7215ee0ab3d5": {
+          "anonymous": false,
+          "inputs": [],
+          "name": "RevealStarted",
+          "type": "event"
+        },
+        "0xe2a7169cedebe39671840370ae19ca4fc41be6191d4c77f174f189a4d8cd08c8": {
+          "anonymous": false,
+          "inputs": [],
+          "name": "Revealed",
+          "type": "event"
+        },
+        "0x19aad37188a1d3921e29eb3c66acf43d81975e107cb650d58cca878627955fd6": {
+          "anonymous": false,
+          "inputs": [],
+          "name": "Unlocked",
+          "type": "event"
+        },
+        "0x9ecddc78281920c67e40736ed58503f7fe180b7312a30d1a4613e8bb5868f3d4": {
+          "anonymous": false,
+          "inputs": [],
+          "name": "VoteFinished",
+          "type": "event"
+        },
+        "0xf6d7d8f638af86edbd3db0363022953a79197e2b970840dd72ca38b9b4ada892": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "msg",
+              "type": "bytes32"
+            }
+          ],
+          "name": "Debug",
+          "type": "event"
+        }
+      },
+      "updated_at": 1508697654619
     }
   },
   "schema_version": "0.0.5",
-  "updated_at": 1508677933659
+  "updated_at": 1508697654619
 }
