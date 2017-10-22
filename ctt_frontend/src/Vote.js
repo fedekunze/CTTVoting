@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import CountdownClock from './CountdownClock';
-import {Grid, Row, Col, Modal, Form, FormGroup, Button, FormControl,
-  ControlLabel, Table, thead, tbody, Checkbox, Jumbotron} from 'react-bootstrap';
+import {Grid, Row, Col, Modal, Alert, Form, FormGroup, Button, FormControl,
+  ControlLabel, Table, thead, tbody, Checkbox, Jumbotron, Collapse, Well} from 'react-bootstrap';
 import './App.css';
 
 class Vote extends React.Component {
@@ -10,6 +10,7 @@ class Vote extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      openCollapse: false,
       show: false,
       totalShares: 0,
       deadline: undefined,
@@ -24,15 +25,21 @@ class Vote extends React.Component {
           'shares': 0
         }]
     }
+    this.onToggle = this.onToggle.bind(this);
+    this.changeOption = this.changeOption.bind(this);
+    this.handleSubmitVote = this.handleSubmitVote.bind(this);
   }
 
   changeOption(index, newValue) {
-    var stateCopy = Object.assign({}, this.state);
-    stateCopy.options = stateCopy.options.slice();
-    stateCopy.options[index] = Object.assign({}, stateCopy.options[index]);
-    stateCopy.options[index].shares = newValue;
-    this.setState(stateCopy);
-    this.setState({totalShares: this.state.totalShares + newValue});
+      if (newValue > 0) {
+        console.log(newValue);
+        const options = this.state.options.slice();
+        options[index]['shares'] = newValue;
+        this.setState({
+          options: options,
+          totalShares: this.state.totalShares + newValue
+        });
+      }
   }
 
   changeDeadline() {
@@ -45,12 +52,21 @@ class Vote extends React.Component {
 
   onToggle() {
   // check if checkbox is checked
-    var secretInput = document.getElementById('secret-input');
-    if (document.getElementsByClassName('checkbox').checked) {
+
+    var secretInput = ReactDOM.findDOMNode(this.refs.secretInput);
+    alert(secretInput.value);
+    if (ReactDOM.findDOMNode(this.refs.modalCheckbox.checked)) {
       secretInput.type = 'text';
     } else {
       secretInput.type = 'password';
     }
+  }
+
+  handleSubmitVote() {
+    this.setState({show: true});
+    this.changeOption(0, ReactDOM.findDOMNode(this.refs.formOptions0.value));
+    this.changeOption(1, ReactDOM.findDOMNode(this.refs.formOptions1.value));
+
   }
 
   showModal = () => {
@@ -65,14 +81,13 @@ class Vote extends React.Component {
     var count = 0;
 
     const opts = Object.keys(this.state.options).map((name, i) => (
-      <Col xs={12} md={6} className="voting-options" controlId={"option-"+ i.toString()}>
+      <Col xs={12} md={6} className="voting-options" ref={"option"+ i.toString()}>
           <h4>{this.state.options[i]['name']}</h4>
           <ControlLabel>Amount: </ControlLabel>
-          <FormGroup controlId={"formOptions-"+ i.toString()}>
+          <FormGroup ref={"formOptions"+ i.toString()}>
             <FormControl
               type="number"
               placeholder=" "
-              // onChange={this.changeOption(i, document.getElementById("formOptions-"+ i.toString()).value)}
             />
             <FormControl.Feedback />
           </FormGroup>
@@ -158,7 +173,7 @@ class Vote extends React.Component {
               <Col xs={4} md={4}>
                 <Button bsStyle="primary"
                       bsSize="large"
-                      onClick={() => this.setState({ show: true})}
+                      onClick={this.handleSubmitVote}
                       type="submit" block>
                   Submit
                 </Button>
@@ -177,23 +192,40 @@ class Vote extends React.Component {
               <Modal.Title id="contained-modal-title">Summary of your vote</Modal.Title>
             </Modal.Header>
             <Modal.Body className="modal-body">
-              <p>Shares: X </p>
-              <p>Shares bet: X </p>
-              <p>Total Shares Left: </p>
+
+              <p>Shares: 100 </p>
+              <p>Shares bet: {this.state.totalShares} </p>
+              <p>Total Shares Left: {100-this.state.totalShares} </p>
+              <Button onClick={ ()=> this.setState({ openCollapse: !this.state.openCollapse })}>
+                See Details
+              </Button>
+              <Collapse in={this.state.openCollapse}>
+                <div>
+                  <Well>
+                    Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid.
+                    Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident.
+                  </Well>
+                </div>
+              </Collapse>
               <br/>
-              <FormGroup controlId="secret-input">
+              <FormGroup >
                 <ControlLabel>Secret Key</ControlLabel>
                 <FormControl
                   type="password"
                   label="Secret key"
                   data-toggle="password"
+                  ref="secretInput"
                   placeholder="Enter your secret"
                 />
                 <FormControl.Feedback />
               </FormGroup>
-              <Checkbox className="modal-checkbox" onClick={this.onToggle}>
+              <Checkbox ref="modalCheckbox" onClick={this.onToggle}>
                   Show secret
               </Checkbox>
+
+              <Alert bsStyle="warning" onDismiss={this.handleAlertDismiss}>
+                <p>Save your secret securely. You will need it to reveal your vote afterwards.</p>
+              </Alert>
 
             </Modal.Body>
             <Modal.Footer>
