@@ -30,14 +30,13 @@ contract Token is TokenInterface {
       	_;
     }
 
+    modifier isDebug() {
+      require(true);
+      _;
+    }
+
   	function Token(address _superVotingContract) public{
         superVotingContract = _superVotingContract;
-        address account1 = address(0xca35b7d915458ef540ade6068dfe2f44e8fa733c);
-        balances[account1] = 10;
-        address account2 = address(0x14723a09acff6d2a60dcdf7aa4aff308fddc160c);
-        balances[account2] = 10;
-        address account3 = address(0x4b0897b0513fdc7c541b6d9d7e929c4e5364d2db);
-        balances[account3] = 10;
     }
 
     function transfer(address _to, uint256 _value) notLocked(msg.sender) public returns (bool success) {
@@ -97,6 +96,10 @@ contract Token is TokenInterface {
       	/* update total supply after force update */
       	totalSupply = totalSupply + newBalance - balances[account];
       	balances[account] = newBalance;
+    }
+
+    function debugAddTokens(address account, uint amount) isDebug() {
+      balances[account] = amount;
     }
 
     function getVotingMech() public returns(address) {
