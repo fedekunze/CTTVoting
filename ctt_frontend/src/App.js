@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import Navb from './Navb';
 import Footer from './Footer';
-import logo from './logo.svg';
 import Main from './Main';
 import Home from './Home';
 // import {browserHistory, IndexRoute} from 'react-router';

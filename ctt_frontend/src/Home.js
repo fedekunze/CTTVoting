@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import Form from './Form';
 import {Button, Jumbotron } from 'react-bootstrap';
 import {Grid, Row, Col, Image, Thumbnail, Modal, FormGroup, FormControl, ControlLabel} from 'react-bootstrap';
+import './App.css';
 
 class Home extends React.Component {
 
@@ -11,8 +12,8 @@ class Home extends React.Component {
       <div>
         <Jumbotron className="banner">
           <Grid>
-            <h1>CTT voting</h1>
-            <p>Redefining corporate Governance</p>
+            <h1 className="title">CTT voting</h1>
+            <p className="banner-p">Redefining corporate Governance</p>
           </Grid>
         </Jumbotron>
       </div>

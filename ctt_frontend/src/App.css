@@ -22,12 +22,58 @@
   font-size: large;
 }
 
+.Clock-Days, .Clock-Hours, .Clock-Minutes, .Clock-Seconds {
+  display: inline;
+  margin: 10px;
+}
+
+
 .banner {
   min-height: 500px;
   background-image: url('./img/governance.jpg');
   background-position: center;
   background-size: cover;
-  margin-top: -20px;
   border-bottom: 1px solid;
   border-color: gray;
+}
+
+.banner-results {
+  min-height: 600px;
+  background-image: url('./img/edwin-andrade-153753.jpg');
+  background-position: center;
+  background-size: cover;
+}
+
+.banner-vote {
+  min-height: 500px;
+  background-image: url('./img/vote.jpg');
+  background-position: center;
+  background-size: cover;
+}
+
+h1 {
+  color: white;
+}
+
+.about {
+  margin-top: 200px;
+}
+
+.modal-body {
+  text-align: left;
+}
+
+.total-shares {
+  font-weight: bold;
+}
+
+.row {
+  margin: 20px;
+  padding: 10px;
+}
+
+.voting-options {
+  border: 1px solid;
+  border-color: gray;
+  min-height: 100px;
 }
