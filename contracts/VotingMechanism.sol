@@ -31,7 +31,7 @@ contract VotingMechanism {
     uint interest = (101)*(10**16);
     //interest should really be a construction / config parameter
     struct Vote {
-        /* H(_vote[]||secret) stored here for each voter */
+        /* H(secret||_vote[]) stored here for each voter */
         bytes32 blindedVote;
         bool voted;
         bool revealed;
@@ -56,7 +56,7 @@ contract VotingMechanism {
     modifier isRevealing() { require(votingSessions[currentSession].state == VotingState.Revealing);_; }
     modifier notYetRevealed() { require(votingSessions[currentSession].voters[msg.sender].voted && !votingSessions[currentSession].voters[msg.sender].revealed); _; }
     modifier hasFunds(uint[] values) { require(tok.balanceOf(msg.sender) >= values[argmax(values)]); _; }
-    modifier validCommitment(bytes32 secret, uint[] votes) { require(keccak256(secret,votes) == votingSessions[currentSession].voters[msg.sender].blindedVote);_; }
+    modifier validCommitment(string secret, uint[] votes) { require(keccak256(secret,votes) == votingSessions[currentSession].voters[msg.sender].blindedVote);_; }
     modifier isFinished() { require(currentSession == 0 || votingSessions[currentSession].state == VotingState.Finished);_; }
   	/* checks if the voter is within phaseLength for phase (VOTING or REVEAL) */
     modifier validPhaseTime() { require(block.number - votingSessions[currentSession].startingPhaseTime < votingSessions[currentSession].phaseLength);_; }
@@ -123,15 +123,16 @@ contract VotingMechanism {
     }
 
     /* reveal real votes */
-    function reveal(bytes32 secret, uint[] values)
+    function reveal(string secret, uint[] values)
   		  isRevealing()
         validPhaseTime()
-        //validCommitment(secret, values)
+        validCommitment(secret, values)
         notYetRevealed()
         hasFunds(values)
         checkValLength(values)
     {
-        Debug(sha3(secret, values));
+        Debug(votingSessions[currentSession].voters[msg.sender].blindedVote);
+        Debug(keccak256(secret,values));
         for (uint i = 0; i < votingSessions[currentSession].numOptions; i++) {
             votingSessions[currentSession].totalVotes[i] += values[i];
         }
@@ -195,6 +196,12 @@ contract VotingMechanism {
 
     function getVote(address account) public returns (bytes32, uint[]) {
         return (votingSessions[currentSession].voters[msg.sender].blindedVote, votingSessions[currentSession].voters[msg.sender].values);
+    }
+
+    function sha3Helper(string secret, uint[] values) public constant returns (bytes32) {
+      bytes32 result = keccak256(secret,values);
+      Debug(result);
+      return result;
     }
 
 }

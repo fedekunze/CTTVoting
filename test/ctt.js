@@ -30,19 +30,18 @@ contract('CTTVoting', accounts => {
   });
   it("Big messy test", () => {
     return votingMech.newVotingSession("A or B", 2, 4, {from: accounts[0]}).then(_ => {
-      console.log(web3.sha3("Voter 1 Secret", [40, 0]));
       return Promise.all([
-        votingMech.vote(web3.sha3(web3.sha3("Voter 1 Secret"), [40, 0]), {from: accounts[1]}),
-        votingMech.vote(web3.sha3(web3.sha3("Voter 2 Secret"), [0, 60]), {from: accounts[2]}),
-        votingMech.vote(web3.sha3(web3.sha3("Voter 3 Secret"), [30, 0]), {from: accounts[3]})
+        votingMech.sha3Helper.call("Voter 1 Secret", [40, 0]).then(h => votingMech.vote(h, {from: accounts[1]})),
+        votingMech.sha3Helper.call("Voter 2 Secret", [0, 60]).then(h => votingMech.vote(h, {from: accounts[2]})),
+        votingMech.sha3Helper.call("Voter 3 Secret", [30, 0]).then(h => votingMech.vote(h, {from: accounts[3]}))
       ]).then(_ => {
         console.log("moving to reveal");
         return votingMech.moveToReveal({from: accounts[0]}).then(_ => {
           console.log("moved to reveal");
           return Promise.all([
-            votingMech.reveal(web3.sha3("Voter 1 Secret"), [40, 0], {from: accounts[1]}),
-            votingMech.reveal(web3.sha3("Voter 2 Secret"), [0, 60], {from: accounts[2]}),
-            votingMech.reveal(web3.sha3("Voter 3 Secret"), [30, 0], {from: accounts[3]})
+            votingMech.reveal("Voter 1 Secret", [40, 0], {from: accounts[1]}),
+            votingMech.reveal("Voter 2 Secret", [0, 60], {from: accounts[2]}),
+            votingMech.reveal("Voter 3 Secret", [30, 0], {from: accounts[3]})
           ]).then(_ => {
             console.log("revealed all")
             return votingMech.moveToFinish({from: accounts[0]}).then(_ => {
@@ -60,7 +59,6 @@ contract('CTTVoting', accounts => {
                   assert.equal(Number(bal1), 71, "Voter 1 should receive 1 unit of interest and be charged 30 units");
                   assert.equal(Number(bal2), 101, "Voter 2 should receive 1 unit of interest and not be charged");
                   assert.equal(Number(bal3), 81, "Voter 3 should receive 1 unit of interest and be charged 20 units");
-                  assert.fail();
                 })
               })
             })
