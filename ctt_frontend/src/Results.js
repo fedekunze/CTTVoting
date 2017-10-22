@@ -9,8 +9,7 @@ class Results extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      secret: '',
-      newSecret: ''
+      totalShares :0
     }
   }
 
@@ -27,29 +26,42 @@ class Results extends React.Component {
         <Grid>
           <Row>
             <Col xs={12} md={12}>
-              <h2>Reveal your vote</h2>
+              <h2>Results</h2>
               <br/>
-              <p>Enter your secret key to reveal the vote you submitted.</p>
             </Col>
           </Row>
-        </Grid>
-        <hr/>
-        <Grid>
+          <hr/>
           <Row>
-            <Col xs={12} md={12}>
-              <Form>
-                <FormControl
-                  className="input-reveal"
-                  placeholder="Secret Key"
-                  type="password"
-                  onChange={event => this.setState({newSecret: event.target.value})}
-                >
-                </FormControl>
-                <Button onClick={() => this.submitSecret()}>Reveal</Button>
-              </Form>
-            </Col>
+            <Table striped bordered condensed hover>
+              <thead>
+                <tr>
+                  <th></th>
+                  <th>Total Shares</th>
+                  <th>Percent</th>
+                  <th>Final Result</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>{this.state.options[0]['name']}</td>
+                  <td>{this.state.options[0]['shares']}</td>
+                  <td>{this.state.options[0]['shares']*100/this.state.totalShares} %</td>
+                  <td>{this.state.options[0]['shares'] > this.state.options[1]['shares'] ? 'Selected' : 'Unselected'} %</td>
+                </tr>
+                <tr>
+                  <td>{this.state.options[1]['name']}</td>
+                  <td>{this.state.options[1]['shares']}</td>
+                  <td>{this.state.options[1]['shares']*100/this.state.totalShares} %</td>
+                  <td>{this.state.options[0]['shares'] < this.state.options[1]['shares'] ? 'Selected' : 'Unselected'} %</td>
+                </tr>
+                <tr>
+                  <td colspan="3" className="total-shares">{this.state.totalShares}</td>
+                </tr>
+              </tbody>
+            </Table>
           </Row>
         </Grid>
+
       </div>
     );
   }

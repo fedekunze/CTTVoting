@@ -3,11 +3,13 @@ import {Navbar, Nav, NavItem, NavDropdown, MenuItem, Button} from 'react-bootstr
 import { LinkContainer } from 'react-router-bootstrap';
 import Home from './Home';
 import {Link, Route, BrowserRouter as Router, withRouter} from 'react-router-dom';
+import {web3, tokenContract, accounts} from './EthereumSetup';
 import './App.css';
 
 class Navb extends React.Component {
 
   render() {
+    // var addr_balance = tokenContract.balanceOf()
     return (
         <Router>
           <Navbar inverse collapseOnSelect fixedTop className="navbar">
@@ -25,12 +27,15 @@ class Navb extends React.Component {
                 <LinkContainer to='/vote'>
                   <NavItem eventKey={2} href='/vote' >Vote</NavItem>
                 </LinkContainer>
+                <LinkContainer to='/reveal'>
+                  <NavItem eventKey={3} href='/reveal' >Reveal</NavItem>
+                </LinkContainer>
                 <LinkContainer to='/results'>
-                  <NavItem eventKey={3} href='/results'>Results</NavItem>
+                  <NavItem eventKey={4} href='/results'>Results</NavItem>
                 </LinkContainer>
               </Nav>
               <Nav pullRight className="nav">
-                <NavItem href="#">Balance: 100 ETH</NavItem>
+                <NavItem href="#">Balance:  ETH</NavItem>
               </Nav>
             </Navbar.Collapse>
           </Navbar>

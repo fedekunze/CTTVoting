@@ -5,6 +5,7 @@ import Home from './Home';
 import Vote from './Vote';
 import About from './About';
 import Results from './Results';
+import Reveal from './Reveal';
 import Admin from './Admin';
 import { BrowserRouter as Router, withRouter } from 'react-router-dom';
 import { Route, Switch } from 'react-router-dom';
@@ -20,6 +21,7 @@ class Main extends React.Component {
           <Route exact path='/vote' component={Vote}/>
           <Route exact path='/about' component={About}/>
           <Route exact path='/results' component={Results}/>
+          <Route exact path='/reveal' component={Reveal}/>
           <Route exact path='/admin' component={Admin}/>
         </Switch>
       </Router>
