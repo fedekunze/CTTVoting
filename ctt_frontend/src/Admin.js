@@ -19,7 +19,7 @@ class Admin extends React.Component {
       new_end_votation: undefined,
       start_reveal: undefined,
       new_start_reveal: undefined,
-      end_votation: undefined,
+      end_reveal: undefined,
       new_end_reveal: undefined,
       options: [
       {
@@ -67,6 +67,18 @@ class Admin extends React.Component {
 
   }
 
+  onChangeOpt0(event) {
+    let newOptionsArray = this.state.newOptions.slice();
+    newOptionsArray[0] = event.target.value;
+    this.setState({newOptions: newOptionsArray});
+  }
+
+  onChangeOpt1(event) {
+    let newOptionsArray = this.state.newOptions.slice();
+    newOptionsArray[1] = event.target.value;
+    this.setState({newOptions: newOptionsArray});
+  }
+
   handleFiles = files => {
     var reader = new window.FileReader();
     reader.onload = function(e) {
@@ -99,9 +111,9 @@ class Admin extends React.Component {
       totalOptions: this.state.totalOptions + 1
     }); //set the new state
 
-    inputForm.addEventListener('onchange', function(e){
+    inputForm.addEventListener('onchange', function(event){
       let newOptionsArray = this.state.newOptions.slice();
-      newOptionsArray[this.state.totalOptions] = e.target.value;
+      newOptionsArray[this.state.totalOptions] = event.target.value;
       this.setState({newOptions: newOptionsArray});
     }, false);
     divInput.appendChild(inputForm);
@@ -198,6 +210,7 @@ class Admin extends React.Component {
                     <FormControl
                       type="text"
                       placeholder="Enter the new option name"
+                      onChange={this.onChangeOpt0.bind(this)}
                       // onChange={event => this.setState({newOptions[0]: event.target.value})}
                     />
                   </Col>
@@ -210,7 +223,7 @@ class Admin extends React.Component {
                     <FormControl
                       type="text"
                       placeholder="Enter the new option name"
-                      // onChange={event => this.setState({newOptions[1]: event.target.value})}
+                      onChange={this.onChangeOpt1.bind(this)}
                       />
                   </Col>
                 </FormGroup>
@@ -238,7 +251,7 @@ class Admin extends React.Component {
       </Grid>
       <Grid>
         <Row>
-          <div controlId="renderPoll">
+          <div id="renderPoll" controlId="renderPoll">
           </div>
         </Row>
       </Grid>

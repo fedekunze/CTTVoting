@@ -37,6 +37,13 @@
   border-color: gray;
 }
 
+.banner-reveal{
+  min-height: 600px;
+  background-image: url('./img/davide-ragusa-24118.jpg');
+  background-position: center;
+  background-size: cover;
+}
+
 .banner-results {
   min-height: 600px;
   background-image: url('./img/edwin-andrade-153753.jpg');
