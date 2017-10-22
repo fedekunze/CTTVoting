@@ -9,6 +9,7 @@ class Admin extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      totalOptions : 0,
       open: false,
       question: "",
       newQuestion: "",
@@ -22,6 +23,8 @@ class Admin extends React.Component {
       new_end_reveal: undefined,
       options: []
     }
+    this.addOptions = this.addOptions.bind(this);
+    this.pushOption = this.pushOption.bind(this);
   }
 
   changeDeadline() {
@@ -30,6 +33,13 @@ class Admin extends React.Component {
       this.setState({deadline: this.state.newDeadline});
     }
     // Update frontend
+  }
+
+  pushOption(reference) {
+    let newOpt = this.state.ids.slice(); //copy the array
+    newOpt.push({'name': reference.text, 'shares': 0}); //execute the manipulations
+    this.setState({options: newOpt}); //set the new state
+    alert(this.state.options.length);
   }
 
   handlePollCreation() {
@@ -46,7 +56,9 @@ class Admin extends React.Component {
         end_votation: this.state.new_end_votation,
         end_reveal: this.state.new_end_reveal,
       });
-      // push all options to the array: initialize with option.share = 0 & name  
+      Object.keys(this.refs).forEach(index => this.pushOption(this.refs[index]))
+
+      // push all options to the array: initialize with option.share = 0 & name
     }
 
   }
@@ -71,11 +83,14 @@ class Admin extends React.Component {
     divInput.classList.add('col-sm-10');
     var inputForm = document.createElement('input');
     inputForm.type = 'text';
+    inputForm.setAttribute("id", "inputOption"+this.state.totalOptions.toString());
+    inputForm.setAttribute("ref", "Option"+this.state.totalOptions.toString());
     inputForm.placeholder = 'Enter the new option name';
     inputForm.style.cssText = "width: 100%; padding: 6px 12px; height: 34px; border-radius: 4px; boder: 1px solid #ccc; box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);";
     divInput.appendChild(inputForm);
     newOption.appendChild(formLabel);
     newOption.appendChild(divInput);
+    this.setState({totalOptions: this.state.totalOptions + 1});
     document.getElementById('newForm').appendChild(newOption);
   }
 
