@@ -103,6 +103,7 @@ contract VotingMechanism {
                                                                  false,
                                                                  new uint[](votingSessions[currentSession].numOptions));
         lockedSessions[msg.sender] = currentSession;
+        tok.lockAccount(msg.sender);
     }
 
     /* reveal real votes */
@@ -171,6 +172,10 @@ contract VotingMechanism {
     /* if a voter does not reveal in time, then he loses all access to his tokens */
     function slash(address account) private {
     	tok.forceUpdate(account, 0);
+    }
+
+    function getVote(address account) public returns (bytes32, uint[]) {
+        return (votingSessions[currentSession].voters[msg.sender].blindedVote, votingSessions[currentSession].voters[msg.sender].values);
     }
 
 }

@@ -30,7 +30,7 @@ contract SuperVoting {
     	tok.newVotingMechanism(votingMechContract);
     }
 
-    // function getAdmin() public returns(address) {
-    //     return admin;
-    // }
+    function getAdmin() public returns(address) {
+        return admin;
+    }
 }
