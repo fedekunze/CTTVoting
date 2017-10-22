@@ -10,6 +10,7 @@ contract VotingMechanism {
   	Token tok;
     uint[] totalVotes;
     uint numOptions;
+    uint voteID;
 
   	struct Vote {
         bytes32 blindedVote;
@@ -17,7 +18,7 @@ contract VotingMechanism {
         bool revealed;
     }
 
-  	enum VotingState {Standby, Voting, Revealing}
+  	enum VotingState {Standby, Voting, Revealing};
 
     VotingState state;
 
@@ -65,8 +66,8 @@ contract VotingMechanism {
 
   	/* reveal real votes */
     function reveal(bytes32 secret, uint[] values) isRevealing() validCommitment(secret, votes) notYetRevealed() {
-        if (tokens.balances[msg.sender] < max(values) {
-            tokens.forceUpdate(msg.sender, 0);
+        if (tok.balancesOf(msg.sender) < max(values) {
+            tok.forceUpdate(msg.sender, 0);
             return;
         }
         for (uint i = 0; i < numOptions; i++) {
@@ -77,11 +78,14 @@ contract VotingMechanism {
 
 	/* force charge and unlock */
     function unlock() isStandby() {
-
+        if (!voters[msg.sender].revealed)
     }
 
     /* if a voter does not reveal in time, then he loses all access to his tokens */
     function punish() {
 
     }
+
+
+
 }
