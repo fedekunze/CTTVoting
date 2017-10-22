@@ -2,14 +2,30 @@ import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import {Grid, Row, Col, Form, FormGroup, Button, FormControl,
   ControlLabel, Checkbox, Fade, Well} from 'react-bootstrap';
+import ReactFileReader from 'react-file-reader';
 
 class Admin extends React.Component {
 
   constructor(props) {
     super(props);
     this.state = {
-      open: false
+      open: false,
+      question: "",
+      start_votation: undefined,
+      end_votation: undefined,
+      start_reveal: undefined,
+      end_votation: undefined,
+      options: {}
     }
+  }
+
+  handleFiles = files => {
+    var reader = new window.FileReader();
+    reader.onload = function(e) {
+    // Use reader.result
+    alert(reader.result)
+    }
+    reader.readAsText(files[0]);
   }
 
   addOptions() {
@@ -99,6 +115,11 @@ class Admin extends React.Component {
                 </Col>
               </FormGroup>
             </Form>
+            <br/>
+            <h3>Upload csv for shareholder ratio</h3>
+            <ReactFileReader handleFiles={this.handleFiles} fileTypes={'.csv'}>
+              <Button className='button'>Upload csv</Button>
+            </ReactFileReader>
             </Well>
           </div>
         </Fade>

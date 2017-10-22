@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import CountdownClock from './CountdownClock';
-import {Grid, Row, Col, Modal, FormGroup, Button, FormControl,
+import {Grid, Row, Col, Modal, Form, FormGroup, Button, FormControl,
   ControlLabel, Table, thead, tbody, Checkbox, Jumbotron} from 'react-bootstrap';
 import './App.css';
 
@@ -11,13 +11,28 @@ class Vote extends React.Component {
     super(props);
     this.state = {
       show: false,
-      deadline: 'Tomorrow'
+      deadline: 'November 25, 2017',
+      newDeadline: ''
+    }
+  }
+
+  changeDeadline() {
+    this.setState({deadline: this.state.newDeadline})
+  }
+
+  onToggle() {
+  // check if checkbox is checked
+    var secretInput = document.getElementById('secret-input');
+    if (document.getElementsByClassName('modal-checkbox checkbox').checked) {
+      secretInput.type = 'text';
+    } else {
+      secretInput.type = 'password';
     }
   }
 
   showModal = () => {
   this.setState({
-    show: true
+    show: true,
     // unit_id: this._reactInternalInstance._currentElement._owner.getAttribute("id")
   })
 }
@@ -38,7 +53,22 @@ class Vote extends React.Component {
               </Col>
             </Row>
             <Row className="row">
-              <CountdownClock/>
+              <CountdownClock
+                deadline={this.state.deadline}
+              />
+            </Row>
+            <Row>
+              <Col xs={12} md={12}>
+                <Form inline>
+                  <FormControl
+                    className="deadline-input"
+                    placeholder="New Date"
+                    onChange={event => this.setState({newDeadline: event.target.value})}
+                  >
+                  </FormControl>
+                  <Button onClick={() => this.changeDeadline()}>Submit</Button>
+                </Form>
+              </Col>
             </Row>
           </Grid>
           <hr/>
@@ -132,7 +162,7 @@ class Vote extends React.Component {
               <p>Shares bet: X </p>
               <p>Total Shares Left: </p>
               <br/>
-              <FormGroup controlId="formBasicText">
+              <FormGroup controlId="secret-input">
                 <ControlLabel>Secret Key</ControlLabel>
                 <FormControl
                   type="password"
@@ -142,7 +172,7 @@ class Vote extends React.Component {
                 />
                 <FormControl.Feedback />
               </FormGroup>
-              <Checkbox inputRef={ref => { this.input = ref; }}>
+              <Checkbox className="modal-checkbox" onClick={this.onToggle}>
                   Show secret
               </Checkbox>
 
