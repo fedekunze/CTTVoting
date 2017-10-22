@@ -40,6 +40,14 @@ contract VotingMechanism {
 
     uint[] altResults;
 
+    event VoteStarted();
+    event Voted();
+    event RevealStarted();
+    event Revealed();
+    event Unlocked();
+    event VoteFinished();
+    event Debug(bytes32 msg);
+
     modifier isVoting() { require(votingSessions[currentSession].state == VotingState.Voting); _; }
   	modifier unlocked() { require(lockedSessions[msg.sender] == 0); _; }
     /* so that they can't vote twice */
@@ -73,6 +81,7 @@ contract VotingMechanism {
                                                        currBlockTime,
                                                        _phaseLength,
                                                        VotingState.Voting);
+        VoteStarted();
     }
 
     /* Gets question and choices of current voting session's */
@@ -81,14 +90,20 @@ contract VotingMechanism {
     }
 
     /* admin can poke contract to next phase voting -> reveal */
-    function moveToReveal() isAdmin() isVoting() isPastPhaseTime() {
+    function moveToReveal()
+      isAdmin()
+      isVoting()
+      isPastPhaseTime()
+    {
         votingSessions[currentSession].state = VotingState.Revealing;
       	votingSessions[currentSession].startingPhaseTime = block.number;
+        RevealStarted();
     }
 
     /* admin can poke contract to next phase reveal -> finish */
     function moveToFinish() isAdmin() isRevealing() isPastPhaseTime() {
         votingSessions[currentSession].state = VotingState.Finished;
+        VoteFinished();
     }
 
     /* create a vote takes in an input of a hashed secret key and your array of votes */
@@ -104,22 +119,25 @@ contract VotingMechanism {
                                                                  new uint[](votingSessions[currentSession].numOptions));
         lockedSessions[msg.sender] = currentSession;
         tok.lockAccount(msg.sender);
+        Voted();
     }
 
     /* reveal real votes */
     function reveal(bytes32 secret, uint[] values)
-  		isRevealing()
+  		  isRevealing()
         validPhaseTime()
-        validCommitment(secret, values)
+        //validCommitment(secret, values)
         notYetRevealed()
         hasFunds(values)
         checkValLength(values)
     {
+        Debug(sha3(secret, values));
         for (uint i = 0; i < votingSessions[currentSession].numOptions; i++) {
             votingSessions[currentSession].totalVotes[i] += values[i];
         }
       	votingSessions[currentSession].voters[msg.sender].values = values;
         votingSessions[currentSession].voters[msg.sender].revealed = true;
+        Revealed();
     }
 
     /* called at any time after revealing */
@@ -135,6 +153,7 @@ contract VotingMechanism {
         }
       	/* can vote again */
       	lockedSessions[msg.sender] = 0;
+        Unlocked();
     }
 
   	/* if winner with total votes is different than winner with (totalvotes - your votes) then your
