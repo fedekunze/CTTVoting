@@ -11,12 +11,44 @@ class Admin extends React.Component {
     this.state = {
       open: false,
       question: "",
+      newQuestion: "",
       start_votation: undefined,
+      new_start_votation: undefined,
       end_votation: undefined,
+      new_end_votation: undefined,
       start_reveal: undefined,
+      new_start_reveal: undefined,
       end_votation: undefined,
-      options: {}
+      new_end_reveal: undefined,
+      options: []
     }
+  }
+
+  changeDeadline() {
+    const present = new Date();
+    if (Date.parse(this.state.newDeadline) > Date.parse(present)) {
+      this.setState({deadline: this.state.newDeadline});
+    }
+    // Update frontend
+  }
+
+  handlePollCreation() {
+    const present = new Date();
+    if ((Date.parse(this.state.start_votation) > Date.parse(present)) &&
+    (Date.parse(this.state.end_votation) > Date.parse(this.state.start_votation)) &&
+    (Date.parse(this.state.start_reveal) > Date.parse(this.state.end_votation)) &&
+    (Date.parse(this.state.end_reveal) > Date.parse(this.state.start_reveal))
+   ) {
+      this.setState({
+        question: this.state.newQuestion,
+        start_votation: this.state.new_start_votation,
+        start_reveal: this.state.new_start_reveal,
+        end_votation: this.state.new_end_votation,
+        end_reveal: this.state.new_end_reveal,
+      });
+      // push all options to the array: initialize with option.share = 0 & name  
+    }
+
   }
 
   handleFiles = files => {
@@ -109,7 +141,7 @@ class Admin extends React.Component {
               </FormGroup>
               <FormGroup>
                 <Col sm={12}>
-                  <Button type="submit">
+                  <Button type="submit" onClick={this.handlePollCreation}>
                     Create
                   </Button>
                 </Col>

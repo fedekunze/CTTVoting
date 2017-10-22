@@ -4,7 +4,6 @@ import Navb from './Navb';
 import Footer from './Footer';
 import Main from './Main';
 import Home from './Home';
-// import {browserHistory, IndexRoute} from 'react-router';
 import {Link, Route, BrowserRouter as Router, Handler, withRouter} from 'react-router-dom';
 import './App.css';
 

@@ -11,19 +11,42 @@ class Vote extends React.Component {
     super(props);
     this.state = {
       show: false,
-      deadline: 'November 25, 2017',
-      newDeadline: ''
+      totalShares: 0,
+      deadline: undefined,
+      newDeadline: undefined,
+      options: [
+        {
+          'name': 'Opt 1',
+          'shares': 0
+        },
+        {
+          'name': 'Opt 2 ',
+          'shares': 0
+        }]
     }
   }
 
+  changeOption(index, newValue) {
+    var stateCopy = Object.assign({}, this.state);
+    stateCopy.options = stateCopy.options.slice();
+    stateCopy.options[index] = Object.assign({}, stateCopy.options[index]);
+    stateCopy.options[index].shares = newValue;
+    this.setState(stateCopy);
+    this.setState({totalShares: this.state.totalShares + newValue});
+  }
+
   changeDeadline() {
-    this.setState({deadline: this.state.newDeadline})
+    const present = new Date();
+    if (Date.parse(this.state.newDeadline) > Date.parse(present)) {
+      this.setState({deadline: this.state.newDeadline});
+    }
+    // Update frontend
   }
 
   onToggle() {
   // check if checkbox is checked
     var secretInput = document.getElementById('secret-input');
-    if (document.getElementsByClassName('modal-checkbox checkbox').checked) {
+    if (document.getElementsByClassName('checkbox').checked) {
       secretInput.type = 'text';
     } else {
       secretInput.type = 'password';
@@ -33,13 +56,29 @@ class Vote extends React.Component {
   showModal = () => {
   this.setState({
     show: true,
-    // unit_id: this._reactInternalInstance._currentElement._owner.getAttribute("id")
   })
 }
 // Photo by Arnaud Jaegers on Unsplash
   render() {
 
     let close = () => this.setState({ show: false });
+    var count = 0;
+
+    const opts = Object.keys(this.state.options).map((name, i) => (
+      <Col xs={12} md={6} className="voting-options" controlId={"option-"+ i.toString()}>
+          <h4>{this.state.options[i]['name']}</h4>
+          <ControlLabel>Amount: </ControlLabel>
+          <FormGroup controlId={"formOptions-"+ i.toString()}>
+            <FormControl
+              type="number"
+              placeholder=" "
+              // onChange={this.changeOption(i, document.getElementById("formOptions-"+ i.toString()).value)}
+            />
+            <FormControl.Feedback />
+          </FormGroup>
+      </Col>
+    ))
+
     return (
       <div>
         <Jumbotron className="banner-vote">
@@ -63,6 +102,7 @@ class Vote extends React.Component {
                   <FormControl
                     className="deadline-input"
                     placeholder="New Date"
+                    type= 'datetime-local'
                     onChange={event => this.setState({newDeadline: event.target.value})}
                   >
                   </FormControl>
@@ -73,31 +113,10 @@ class Vote extends React.Component {
           </Grid>
           <hr/>
           <Grid>
+
+
             <Row className="row">
-                <Col xs={12} md={6} className="voting-options">
-                    <h4>Option 1</h4>
-                    <ControlLabel>Amount: </ControlLabel>
-                    <FormGroup controlId="formBasicText">
-                      <FormControl
-                        type="number"
-                        placeholder=" "
-                        onChange={this.handleChange}
-                      />
-                      <FormControl.Feedback />
-                    </FormGroup>
-                </Col>
-                <Col xs={12} md={6} className="voting-options">
-                  <h4>Option 2</h4>
-                  <ControlLabel>Amount: </ControlLabel>
-                  <FormGroup controlId="formBasicText">
-                    <FormControl
-                      type="number"
-                      placeholder=" "
-                      onChange={this.handleChange}
-                    />
-                    <FormControl.Feedback />
-                  </FormGroup>
-                </Col>
+                {opts}
             </Row>
           </Grid>
           <hr/>
@@ -117,16 +136,16 @@ class Vote extends React.Component {
                 </thead>
                 <tbody>
                   <tr>
-                    <td>Option 1</td>
-                    <td>32</td>
+                    <td>{this.state.options[0]['name']}</td>
+                    <td>{this.state.options[0]['shares']}</td>
                   </tr>
                   <tr>
-                    <td>Option 2</td>
-                    <td>21</td>
+                    <td>{this.state.options[1]['name']}</td>
+                    <td>{this.state.options[1]['shares']}</td>
                   </tr>
                   <tr>
                     <td></td>
-                    <td className="total-shares">53</td>
+                    <td className="total-shares">{this.state.totalShares}</td>
                   </tr>
                 </tbody>
               </Table>
