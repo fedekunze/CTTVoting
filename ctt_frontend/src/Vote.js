@@ -13,9 +13,11 @@ class Vote extends React.Component {
     this.state = {
       openCollapse: false,
       show: false,
+      showPassword: false,
       totalShares: 0,
-      deadline: undefined,
-      newDeadline: undefined,
+      secret: '',
+      inputSecret: '',
+      totalOptions: 2,
       options: [
         {
           'name': 'Opt 1',
@@ -24,88 +26,66 @@ class Vote extends React.Component {
         {
           'name': 'Opt 2 ',
           'shares': 0
-        }]
+        }],
+      expensesOptions: [0, 0]
     }
     this.onToggle = this.onToggle.bind(this);
-    this.changeOption = this.changeOption.bind(this);
-    this.pushOption = this.pushOption.bind(this);
+    this.changeSecret = this.changeSecret.bind(this);
     this.handleSubmitVote = this.handleSubmitVote.bind(this);
-  }
-
-  changeOption(index, newValue) {
-      if (newValue > 0) {
-        console.log(newValue);
-        const options = this.state.options.slice();
-        options[index]['shares'] = newValue;
-        this.setState({
-          options: options,
-          totalShares: this.state.totalShares + newValue
-        });
-      }
-  }
-
-  changeDeadline() {
-    const present = new Date();
-    if (Date.parse(this.state.newDeadline) > Date.parse(present)) {
-      this.setState({deadline: this.state.newDeadline});
-    }
-    // Update frontend
   }
 
   onToggle() {
   // check if checkbox is checked
-
-    var secretInput = ReactDOM.findDOMNode(this.refs.secretInput);
-    alert(secretInput.value);
-    if (ReactDOM.findDOMNode(this.refs.modalCheckbox.checked)) {
-      secretInput.type = 'text';
-    } else {
-      secretInput.type = 'password';
-    }
+    this.setState({ showPassword: !this.state.showPassword });
   }
 
   handleSubmitVote() {
-    this.setState({show: true});
-    this.changeOption(0, ReactDOM.findDOMNode(this.refs.formOptions0.value));
-    this.changeOption(1, ReactDOM.findDOMNode(this.refs.formOptions1.value));
+    let opt_array = this.state.options.slice();
+    var total_sum = 0;
+    for (var i = 0; i < this.state.totalOptions; i++) {
+      opt_array[i]['shares'] = this.state.expensesOptions[i];
+      total_sum += parseInt(this.state.options[i]['shares'])
+    }
+    this.setState({
+      options: opt_array,
+      totalShares: total_sum,
+      show: true
+    });
+  }
 
+  getTotalShares(){
+    var sum = 0;
+    for (var i = 0; i < this.state.totalOptions; i++) {
+      sum = (sum + parseInt(this.state.options[i]['shares']));
+    }
+    return sum;
+  }
+
+  changeSecret(event) {
+    this.setState({inputSecret: event.target.value});
   }
 
   handleVote() {
-    // var Voted;
-    // Voted = votingMechContract.Voted({from: accounts[0]});
-    // Voted.watch(function(err, result) {
-    //   if (err) {
-    //     console.log(err);
-    //   } else {
-    //     console.log(result);
-    //   }
-    // })
-    var input = votingMechContract.sha3Helper("0x0001", [1,2] , {from: accounts[1], gas: 4000000}, function(error, result) {
+
+    if (this.state.inputSecret !== '') {
+      this.setState({secret: this.state.inputSecret});
+    }
+
+    var input = votingMechContract.sha3Helper(this.state.secret, [1,2] , {from: accounts[1], gas: 4000000}, function(error, result) {
       if (error) {
-        console.log(error);
+        console.log('Error: ' + error);
       } else {
-        console.log(result);
+        console.log('Result: ' + result);
       }
     });
-
     console.log(input);
-
     votingMechContract.vote(input, {from: accounts[0], gas: 4000000}, function(error, result) {
       if (error) {
-        console.log(error);
+        console.log('Error: ' + error);
       } else {
-        console.log(result);
+        console.log('Result: ' + result);
       }
     })
-  }
-
-  pushOption(reference) {
-    console.log('push new option');
-    let newOpt = this.state.options.slice(); //copy the array
-    newOpt.push({'name': reference.text, 'shares': 0}); //execute the manipulations
-    this.setState({options: newOpt}); //set the new state
-    alert(this.state.options.length);
   }
 
   showModal = () => {
@@ -126,7 +106,15 @@ class Vote extends React.Component {
           <FormGroup ref={"formOptions"+ i.toString()}>
             <FormControl
               type="number"
-              placeholder=" "
+              placeholder=""
+              onChange={(event) => {
+                let expensesOptionsArray = this.state.expensesOptions.slice();
+                expensesOptionsArray[i] = event.target.value;
+                this.setState({
+                  expensesOptions: expensesOptionsArray,
+                });
+              }
+            }
             />
             <FormControl.Feedback />
           </FormGroup>
@@ -142,33 +130,13 @@ class Vote extends React.Component {
             <Row className="row">
               <Col xs={12} md={12}>
                 <h1>Vote</h1>
-                <p>You have until {this.state.deadline} to vote</p>
               </Col>
             </Row>
             <Row className="row">
-              <CountdownClock
-                deadline={this.state.deadline}
-              />
-            </Row>
-            <Row>
-              <Col xs={12} md={12}>
-                <Form inline>
-                  <FormControl
-                    className="deadline-input"
-                    placeholder="New Date"
-                    type= 'datetime-local'
-                    onChange={event => this.setState({newDeadline: event.target.value})}
-                  >
-                  </FormControl>
-                  <Button onClick={() => this.changeDeadline()}>Submit</Button>
-                </Form>
-              </Col>
             </Row>
           </Grid>
           <hr/>
           <Grid>
-
-
             <Row className="row">
                 {opts}
             </Row>
@@ -179,30 +147,6 @@ class Vote extends React.Component {
               <Col xs={12} md={12}>
                 <h3>Shares staked</h3>
               </Col>
-            </Row>
-            <Row>
-              <Table striped bordered condensed hover>
-                <thead>
-                  <tr>
-                    <th></th>
-                    <th>Shares</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>{this.state.options[0]['name']}</td>
-                    <td>{this.state.options[0]['shares']}</td>
-                  </tr>
-                  <tr>
-                    <td>{this.state.options[1]['name']}</td>
-                    <td>{this.state.options[1]['shares']}</td>
-                  </tr>
-                  <tr>
-                    <td></td>
-                    <td className="total-shares">{this.state.totalShares}</td>
-                  </tr>
-                </tbody>
-              </Table>
             </Row>
           </Grid>
           <hr/>
@@ -231,37 +175,43 @@ class Vote extends React.Component {
               <Modal.Title id="contained-modal-title">Summary of your vote</Modal.Title>
             </Modal.Header>
             <Modal.Body className="modal-body">
-
-              <p>Shares: 100 </p>
-              <p>Shares bet: {this.state.totalShares} </p>
-              <p>Total Shares Left: {100-this.state.totalShares} </p>
-              <Button onClick={ ()=> this.setState({ openCollapse: !this.state.openCollapse })}>
-                See Details
-              </Button>
-              <Collapse in={this.state.openCollapse}>
-                <div>
-                  <Well>
-                    Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid.
-                    Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident.
-                  </Well>
-                </div>
-              </Collapse>
-              <br/>
-              <FormGroup >
+              <Table striped bordered condensed hover>
+                <thead>
+                  <tr>
+                    <th></th>
+                    <th>Shares</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>{this.state.options[0]['name']}</td>
+                    <td>{this.state.options[0]['shares']}</td>
+                  </tr>
+                  <tr>
+                    <td>{this.state.options[1]['name']}</td>
+                    <td>{this.state.options[1]['shares']}</td>
+                  </tr>
+                  <tr className="total-shares">
+                    <td><b>Total Shares</b></td>
+                    <td>{this.state.totalShares}</td>
+                  </tr>
+                </tbody>
+              </Table>
+              <FormGroup>
                 <ControlLabel>Secret Key</ControlLabel>
                 <FormControl
-                  type="password"
+                  type={!this.state.showPassword ? "password" : "text"}
                   label="Secret key"
                   data-toggle="password"
                   ref="secretInput"
                   placeholder="Enter your secret"
+                  onChange={this.changeSecret}
                 />
                 <FormControl.Feedback />
               </FormGroup>
               <Checkbox ref="modalCheckbox" onClick={this.onToggle}>
                   Show secret
               </Checkbox>
-
               <Alert bsStyle="warning" onDismiss={this.handleAlertDismiss}>
                 <p>Save your secret securely. You will need it to reveal your vote afterwards.</p>
               </Alert>
@@ -269,7 +219,7 @@ class Vote extends React.Component {
             </Modal.Body>
             <Modal.Footer>
                 <Button onClick={close} bsStyle="danger">Cancel</Button>
-                <Button type="submit" bsStyle="success">
+                <Button type="submit" bsStyle="success" onClick={this.handleVote}>
                   Vote
                 </Button>
             </Modal.Footer>

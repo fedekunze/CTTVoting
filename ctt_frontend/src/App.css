@@ -26,6 +26,11 @@ h1 {
   margin-bottom: 42px;
 }
 
+a {
+  text-decoration: none;
+  color: black;
+}
+
 .background-gray {
   background-color: #f5f5f5 !important;
 }
@@ -72,6 +77,7 @@ p.lead {
   font-size: 16px;
   line-height: 30px;
   font-weight: 400;
+  text-decoration: none;
 }
 
 .banner {
@@ -95,6 +101,10 @@ p.lead {
   background-image: url('./img/edwin-andrade-153753.jpg');
   background-position: center;
   background-size: cover;
+}
+
+.left {
+  text-align: left;
 }
 
 .banner-vote {

@@ -15,7 +15,13 @@ class About extends React.Component {
             <Col xs={6} md={4}>
               <Image src={require('./img/team.jpg')} responsive />
             </Col>
-            <Col xs={6} md={8}>
+            <Col xs={6} md={8} className="left">
+              <p className="lead"><a href="https://www.pnkedin.com/in/jeremiah-andrews-779989122/">Jeremiah Andrews</a></p>
+              <p className="lead"><a href="https://www.pnkedin.com/in/saroj-chintakrindi-03206641/">Saroj Chintakrindi</a></p>
+              <p className="lead"><a href="https://www.pnkedin.com/in/kchang87/">Kevin Chang</a></p>
+              <p className="lead"><a href="https://www.pnkedin.com/in/fekunze/">Federico Kunze</a></p>
+              <p className="lead"><a href="https://www.pnkedin.com/in/avneet-saini-38a210109/">Avneet Saini</a></p>
+              <p className="lead"><a href="https://www.pnkedin.com/in/tammyvu/">Tammy Vu</a></p>
             </Col>
           <Row>
           </Row>

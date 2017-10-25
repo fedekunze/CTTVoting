@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom';
 import {Grid, Row, Col, Form, FormGroup, Button, FormControl,
-  ControlLabel, Checkbox, Fade, Well} from 'react-bootstrap';
+  ControlLabel} from 'react-bootstrap';
 import ReactFileReader from 'react-file-reader';
 import {superVotingContract, tokenContract, votingMechContract, accounts, web3} from './EthereumSetup';
 
@@ -16,14 +16,16 @@ class Admin extends React.Component {
       pollInit: false,
       question: "",
       newQuestion: "",
-      start_votation: undefined,
-      new_start_votation: undefined,
-      end_votation: undefined,
-      new_end_votation: undefined,
-      start_reveal: undefined,
-      new_start_reveal: undefined,
-      end_votation: undefined,
-      new_end_reveal: undefined,
+      phase: undefined,
+      newPhase: undefined,
+      // start_votation: undefined,
+      // new_start_votation: undefined,
+      // end_votation: undefined,
+      // new_end_votation: undefined,
+      // start_reveal: undefined,
+      // new_start_reveal: undefined,
+      // end_votation: undefined,
+      // new_end_reveal: undefined,
       options: [{
         'name': '',
         'shares': 0
@@ -40,7 +42,9 @@ class Admin extends React.Component {
     }
     this.addOptions = this.addOptions.bind(this);
     this.handlePollCreation = this.handlePollCreation.bind(this);
+    this.pushOption = this.pushOption.bind(this);
     this.renderPoll = this.renderPoll.bind(this);
+    this.onChangePhase = this.onChangePhase.bind(this);
     this.onChangeQuestion = this.onChangeQuestion.bind(this);
     this.onChangeOpt0 = this.onChangeOpt0.bind(this);
     this.onChangeOpt1 = this.onChangeOpt1.bind(this);
@@ -49,70 +53,93 @@ class Admin extends React.Component {
 
 
   handleQuestion() {
-    votingMechContract.newVotingSession("Question 1. dfsa  2.fdalsj", 2, 4, {from: accounts[0], gas: 4000000}, function(error, result) {
+    console.log('Account:'+ accounts[0]);
+    console.log('newVotingSession');
+    votingMechContract.newVotingSession(this.state.question, this.state.totalOptions, 4, {from: accounts[0], gas: 4000000}, function(error, result) {
       if (error) {
         console.log(error);
       } else {
         console.log(result);
       }
     })
+    console.log('getQuestion');
     var returnedQ = votingMechContract.getQuestion({from: accounts[0], gas: 4000000}, function(error, result) {
       if (error) {
-        console.log(error);
+        console.log('whoops: ' + error);
       } else {
+        returnedQ = result;
         console.log(result);
       }
     })
-    console.log(returnedQ)
+    console.log('Done handleQuestion');
+    console.log('retuned Q:' + returnedQ)
+  }
+
+  pushOption(reference_value) {
+    console.log('push new option');
+    let newOpt = this.state.options.slice(); //copy the array
+    newOpt.push({'name': reference_value, 'shares': 0}); //execute the manipulations
+    this.setState({options: newOpt}); //set the new state
+    console.log('--> Pushing Done');
   }
 
   handlePollCreation() {
     console.log('handle poll creation');
-    const present = new Date();
-    console.log(this.state.new_start_votation.toString());
-    console.log(this.state.new_end_votation.toString());
-    console.log(this.state.new_start_reveal.toString());
-    console.log(this.state.new_end_reveal.toString());
-    if ((Date.parse(this.state.new_start_votation) >= Date.parse(present)) &&
-    (Date.parse(this.state.new_end_votation) > Date.parse(this.state.new_start_votation)) &&
-    (Date.parse(this.state.new_start_reveal) > Date.parse(this.state.new_end_votation)) &&
-    (Date.parse(this.state.new_end_reveal) > Date.parse(this.state.new_start_reveal))
-   ) {
+    // const present = new Date();
+    console.log(this.state.newQuestion);
+    console.log(this.state.newPhase.toString());
+    console.log(this.state.newOptions[0]);
+    console.log(this.state.newOptions[1]);
+    if ((typeof this.state.newQuestion !== undefined) && (typeof this.state.newPhase !== undefined) &&
+      (this.state.newOptions[0] !== '') && (this.state.newOptions[1] !== '')) {
+  //   if ((Date.parse(this.state.new_start_votation) >= Date.parse(present)) &&
+  //   (Date.parse(this.state.new_end_votation) > Date.parse(this.state.new_start_votation)) &&
+  //   (Date.parse(this.state.new_start_reveal) > Date.parse(this.state.new_end_votation)) &&
+  //   (Date.parse(this.state.new_end_reveal) > Date.parse(this.state.new_start_reveal))
+  //  ) {
       console.log('Setting up new state');
       this.setState({
         question: this.state.newQuestion,
-        start_votation: this.state.new_start_votation,
-        start_reveal: this.state.new_start_reveal,
-        end_votation: this.state.new_end_votation,
-        end_reveal: this.state.new_end_reveal,
+        phase: this.state.newPhase,
         pollInit: true,
+        // start_votation: this.state.new_start_votation,
+        // start_reveal: this.state.new_start_reveal,
+        // end_votation: this.state.new_end_votation,
+        // end_reveal: this.state.new_end_reveal,
       });
       console.log('Call to render Poll');
       // this.renderPoll();
+      const values = {}
       console.log('iteration to refs');
-      Object.keys(this.refs).forEach(index => this.pushOption(this.refs[index]))
+      Object.keys(this.refs)
+          .filter(key => key.substr(0,this.state.totalOptions) === 'name')
+          .forEach(key => {
+              this.pushOption(ReactDOM.findDOMNode(this.refs[key]).value || null);
+          });
+      this.handleQuestion()
       console.log('Poll Created !');
-      // push all options to the array: initialize with option.share = 0 & name
+      alert('Poll Created !');
     }
     else {
-      alert('NO POLL');
+      alert('Please fill provide all information to create the poll.');
     }
   }
 
   onChangeQuestion(event) {
-    console.log('onChangeQuestion');
     this.setState({newQuestion: event.target.value});
   }
 
+  onChangePhase(event) {
+    this.setState({newPhase: event.target.value});
+  }
+
   onChangeOpt0(event) {
-    console.log('onChangeOpt0');
     let newOptionsArray = this.state.newOptions.slice();
     newOptionsArray[0] = event.target.value;
     this.setState({newOptions: newOptionsArray});
   }
 
   onChangeOpt1(event) {
-    console.log('OnChangeOpt1');
     let newOptionsArray = this.state.newOptions.slice();
     newOptionsArray[1] = event.target.value;
     this.setState({newOptions: newOptionsArray});
@@ -136,7 +163,7 @@ class Admin extends React.Component {
     var formLabel = document.createElement('label');
     formLabel.classList.add('col-sm-2');
     formLabel.classList.add('control-label');
-    formLabel.innerText = 'Option ' + this.state.totalOptions.toString();
+    formLabel.innerText = 'Option ' + (this.state.totalOptions+1).toString();
     var divInput = document.createElement('div');
     divInput.classList.add('col-sm-10');
     var inputForm = document.createElement('input');
@@ -210,48 +237,14 @@ class Admin extends React.Component {
                     onChange={this.onChangeQuestion}/>
                   </Col>
                 </FormGroup>
-                <FormGroup controlId="formHorizontalStartDateVote">
+                <FormGroup controlId="formHandlePhase">
                   <Col componentClass={ControlLabel} sm={2}>
-                    Start DateTime Vote
+                    Phase
                   </Col>
                   <Col sm={10}>
                     <FormControl
-                    type="datetime-local"
-                    onChange={event => this.setState({new_start_votation: event.target.value})}
-                    />
-                  </Col>
-                </FormGroup>
-                <FormGroup controlId="formHorizontalEndDateVote">
-                  <Col componentClass={ControlLabel} sm={2}>
-                    End DateTime Vote
-                  </Col>
-                  <Col sm={10}>
-                    <FormControl
-                    type="datetime-local"
-                    onChange={event => this.setState({new_end_votation: event.target.value})}
-                    />
-                  </Col>
-                </FormGroup>
-                <FormGroup controlId="formHorizontalStartDateReveal">
-                  <Col componentClass={ControlLabel} sm={2}>
-                    Start DateTime Reveal
-                  </Col>
-                  <Col sm={10}>
-                    <FormControl
-                    type="datetime-local"
-                    onChange={event => this.setState({new_start_reveal: event.target.value})}
-                     />
-                  </Col>
-                </FormGroup>
-                <FormGroup controlId="formHorizontalEndDateReveal">
-                  <Col componentClass={ControlLabel} sm={2}>
-                    End DateTime Reveal
-                  </Col>
-                  <Col sm={10}>
-                    <FormControl
-                    type="datetime-local"
-                    onChange={event => this.setState({new_end_reveal: event.target.value})}
-                     />
+                    type="number"
+                    onChange={this.onChangePhase}/>
                   </Col>
                 </FormGroup>
                 <FormGroup controlId="formOption0">
@@ -261,6 +254,7 @@ class Admin extends React.Component {
                   <Col sm={10}>
                     <FormControl type="text"
                     placeholder="Enter the new option name"
+                    ref="formOption0"
                     onChange={this.onChangeOpt0}
                     />
                   </Col>
@@ -273,6 +267,7 @@ class Admin extends React.Component {
                     <FormControl
                     type="text"
                     placeholder="Enter the new option name"
+                    ref="formOption1"
                     onChange={this.onChangeOpt1}
                      />
                   </Col>
@@ -280,14 +275,14 @@ class Admin extends React.Component {
               </div>
               <FormGroup>
                 <Col sm={12}>
-                  <Button type="button" onClick={this.addOptions}>
-                    Add Option
+                  <Button type="button" bsStyle="success" onClick={this.addOptions}>
+                    <i class="icon icon_plus_alt2"></i> Add Option
                   </Button>
                 </Col>
               </FormGroup>
               <FormGroup>
                 <Col sm={12}>
-                  <Button type="submit" onClick={this.handlePollCreation}>
+                  <Button type="submit" bsStyle="primary" onClick={this.handlePollCreation}>
                     Create
                   </Button>
                 </Col>
@@ -299,25 +294,6 @@ class Admin extends React.Component {
               <Button className='button'>Upload csv</Button>
             </ReactFileReader>
           </div>
-        </Grid>
-        <Grid>
-          <Row>
-            <div id="renderPoll" controlId="renderPoll">
-            {this.state.pollInit? (
-              <Col xs={12} md={12}>
-                <h2>{this.state.question}</h2>
-                <p>{this.state.start_votation}</p>
-                <p>{this.state.end_votation}</p>
-                <p>{this.state.start_reveal}</p>
-                <p>{this.state.end_reveal}</p>
-              </Col>) : (
-                <Col xs={12} md={12}>
-                  <h2>No current Polls</h2>
-                </Col>
-              )
-            }
-            </div>
-          </Row>
         </Grid>
     </div>
     );

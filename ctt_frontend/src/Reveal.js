@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom';
-import {Grid, Row, Col, Table, Form, FormControl, Button, thead, tbody, Jumbotron} from 'react-bootstrap';
+import {Grid, Row, Col, Table, Button, thead, tbody, Jumbotron} from 'react-bootstrap';
 import './App.css';
 
 class Results extends React.Component {

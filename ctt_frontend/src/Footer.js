@@ -8,9 +8,11 @@ class Footer extends React.Component {
           <Row>
             <Col xs={12} md={12}>
               <p>
-                Made with <b>&lt;3</b> by Blockchain at Berkeley <br/>
+                <br/><br/><br/>
+                Athena is powered by <a href="https://blockchain.berkeley.edu">Blockchain at Berkeley</a><br/>
                 Email: <a href="mailto:fekunze@berkeley.edu" target="_top"> fekunze@berkeley.edu</a> <br/>
                 &copy; All rights reserved
+
               </p>
             </Col>
           </Row>
