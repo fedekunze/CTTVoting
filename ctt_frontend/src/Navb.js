@@ -15,7 +15,7 @@ class Navb extends React.Component {
           <Navbar inverse collapseOnSelect fixedTop className="navbar">
             <Navbar.Header className="nav">
                 <Navbar.Brand className="nav">
-                  <a href="/">CTT</a>
+                  <a href="/">Athena</a>
                 </Navbar.Brand>
               <Navbar.Toggle />
             </Navbar.Header>

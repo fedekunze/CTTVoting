@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import CountdownClock from './CountdownClock';
 import {Grid, Row, Col, Modal, Alert, Form, FormGroup, Button, FormControl,
   ControlLabel, Table, thead, tbody, Checkbox, Jumbotron, Collapse, Well} from 'react-bootstrap';
+  import {votingMechContract, accounts, web3} from './EthereumSetup';
 import './App.css';
 
 class Vote extends React.Component {
@@ -27,6 +28,7 @@ class Vote extends React.Component {
     }
     this.onToggle = this.onToggle.bind(this);
     this.changeOption = this.changeOption.bind(this);
+    this.pushOption = this.pushOption.bind(this);
     this.handleSubmitVote = this.handleSubmitVote.bind(this);
   }
 
@@ -67,6 +69,43 @@ class Vote extends React.Component {
     this.changeOption(0, ReactDOM.findDOMNode(this.refs.formOptions0.value));
     this.changeOption(1, ReactDOM.findDOMNode(this.refs.formOptions1.value));
 
+  }
+
+  handleVote() {
+    // var Voted;
+    // Voted = votingMechContract.Voted({from: accounts[0]});
+    // Voted.watch(function(err, result) {
+    //   if (err) {
+    //     console.log(err);
+    //   } else {
+    //     console.log(result);
+    //   }
+    // })
+    var input = votingMechContract.sha3Helper("0x0001", [1,2] , {from: accounts[1], gas: 4000000}, function(error, result) {
+      if (error) {
+        console.log(error);
+      } else {
+        console.log(result);
+      }
+    });
+
+    console.log(input);
+
+    votingMechContract.vote(input, {from: accounts[0], gas: 4000000}, function(error, result) {
+      if (error) {
+        console.log(error);
+      } else {
+        console.log(result);
+      }
+    })
+  }
+
+  pushOption(reference) {
+    console.log('push new option');
+    let newOpt = this.state.options.slice(); //copy the array
+    newOpt.push({'name': reference.text, 'shares': 0}); //execute the manipulations
+    this.setState({options: newOpt}); //set the new state
+    alert(this.state.options.length);
   }
 
   showModal = () => {
